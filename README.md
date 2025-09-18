@@ -6,21 +6,21 @@
 
 ## 📑 Table of Contents
 
-- [🎯 Project Overview](#-project-overview)
-- [🛠️ Technology Stack](#️-technology-stack)
-- [📂 Project Structure](#-project-structure)
-- [✅ Prerequisites](#-prerequisites)
-- [🚀 Quick Start](#-quick-start)
-- [⚙️ Development Commands](#️-development-commands)
-- [🌿 Git Workflow](#-git-workflow)
-  - [🔑 Main Branches](#-main-branches)
-  - [🛠️ Workflow Steps](#️-workflow-steps)
-  - [🔧 Handling Conflicts](#-handling-conflicts)
-- [📋 Contributing Guidelines](#-contributing-guidelines)
-- [🔮 Development Roadmap](#-development-roadmap)
-- [📞 Contact & Support](#-contact--support)
-- [📜 License](#-license)
-- [🙏 Acknowledgments](#-acknowledgments)
+- [🎯 Project Overview](#project-overview)
+- [🛠️ Technology Stack](#technology-stack)
+- [📂 Project Structure](#project-structure)
+- [✅ Prerequisites](#prerequisites)
+- [🚀 Quick Start](#quick-start)
+- [⚙️ Development Commands](#development-commands)
+- [🌿 Git Workflow](#git-workflow)
+  - [🔑 Main Branches](#main-branches)
+  - [🛠️ Workflow Steps](#workflow-steps)
+  - [🔧 Handling Conflicts](#handling-conflicts)
+- [📋 Contributing Guidelines](#contributing-guidelines)
+- [🔮 Development Roadmap](#development-roadmap)
+- [📞 Contact & Support](#contact--support)
+- [📜 License](#license)
+- [🙏 Acknowledgments](#acknowledgments)
 
 ---
 
