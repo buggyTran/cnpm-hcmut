@@ -1,9 +1,7 @@
+import { getMe } from '@/controller/user.controller'
 import express from 'express'
-import { GetHello } from '@/controller/user.controller'
-
 const router = express.Router()
 
-// GET /api/test
-router.get('/test', GetHello)
+router.get('/get-me', getMe)
 
 export default router

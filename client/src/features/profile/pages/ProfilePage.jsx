@@ -1,29 +1,30 @@
 import { useState, useEffect } from 'react';
 import TutorProfile from '../components/TutorProfile';
 import StudentProfile from '../components/StudentProfile';
-import { getMockProfile } from '../data/mockData';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const ProfilePage = () => {
-  // Mock user - Thay đổi role thành 'student' hoặc 'tutor' để test
-  const [currentUser] = useState({
-    id: 1,
-    role: 'student', // Đổi thành 'student' để xem profile học sinh
-    email: 'user@example.com'
-  });
-
-  const [profile, setProfile] = useState(null);
+  const { user, fetchMe, loading: authLoading } = useAuthStore();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Giả lập fetch data
-    setTimeout(() => {
-      const mockProfile = getMockProfile(currentUser.role);
-      setProfile(mockProfile);
-      setLoading(false);
-    }, 500);
-  }, [currentUser.role]);
+    const loadProfile = async () => {
+      try {
+        setLoading(true);
+        if (!user) {
+          await fetchMe();
+        }
+      } catch (error) {
+        console.error('Failed to load profile:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  if (loading) {
+    loadProfile();
+  }, []);
+
+  if (loading || authLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-500"></div>
@@ -31,12 +32,25 @@ const ProfilePage = () => {
     );
   }
 
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <p className="text-gray-600">Không tìm thấy thông tin người dùng</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Check role từ user.roles array
+  const isTutor = user.roles?.includes('TUTOR');
+
   return (
     <div className="section-container">
-      {currentUser?.role === 'tutor' ? (
-        <TutorProfile profile={profile} setProfile={setProfile} />
+      {isTutor ? (
+        <TutorProfile profile={user} />
       ) : (
-        <StudentProfile profile={profile} setProfile={setProfile} />
+        <StudentProfile profile={user} />
       )}
     </div>
   );
