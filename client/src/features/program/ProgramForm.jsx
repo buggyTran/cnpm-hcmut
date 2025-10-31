@@ -94,21 +94,23 @@ export default function ProgramForm() {
 
       <label className={styles.block}>
         <div className={styles.label}>* Vấn đề cụ thể</div>
-        <textarea
-          name="problem"
-          placeholder='VD: "Em gặp khó khăn trong lập trình đệ quy và cấu trúc cây."'
-          className={`${styles.textarea} ${
-            errors.problem ? styles.inputInvalid : ""
-          }`}
-          value={data.problem}
-          onChange={(e) => {
-            if (e.target.value.length <= maxChars) handleChange(e);
-          }}
-          maxLength={maxChars}
-          required
-        />
-        <div className={styles.counter}>
-          {data.problem.length}/{maxChars} ký tự
+        <div className={styles.textareaWrap}>
+          <textarea
+            name="problem"
+            placeholder='VD: "Em gặp khó khăn trong lập trình đệ quy và cấu trúc cây."'
+            className={`${styles.textarea} ${
+              errors.problem ? styles.inputInvalid : ""
+            }`}
+            value={data.problem}
+            onChange={(e) => {
+              if (e.target.value.length <= maxChars) handleChange(e);
+            }}
+            maxLength={maxChars}
+            required
+          />
+          <div className={styles.counter}>
+            {data.problem.length}/{maxChars} ký tự
+          </div>
         </div>
         {errors.problem && (
           <div className={styles.fieldError}>{errors.problem}</div>
@@ -171,21 +173,23 @@ export default function ProgramForm() {
 
       <label className={styles.block}>
         <div className={styles.label}>* Lý do cần mentoring</div>
-        <textarea
-          name="reason"
-          placeholder="VD: Em muốn cải thiện điểm cuối kỳ hoặc học sâu hơn phần thuật toán."
-          className={`${styles.textarea} ${
-            errors.reason ? styles.inputInvalid : ""
-          }`}
-          value={data.reason}
-          onChange={(e) => {
-            if (e.target.value.length <= maxChars) handleChange(e);
-          }}
-          maxLength={maxChars}
-          required
-        />
-        <div className={styles.counter}>
-          {data.reason.length}/{maxChars} ký tự
+        <div className={styles.textareaWrap}>
+          <textarea
+            name="reason"
+            placeholder="VD: Em muốn cải thiện điểm cuối kỳ hoặc học sâu hơn phần thuật toán."
+            className={`${styles.textarea} ${
+              errors.reason ? styles.inputInvalid : ""
+            }`}
+            value={data.reason}
+            onChange={(e) => {
+              if (e.target.value.length <= maxChars) handleChange(e);
+            }}
+            maxLength={maxChars}
+            required
+          />
+          <div className={styles.counter}>
+            {data.reason.length}/{maxChars} ký tự
+          </div>
         </div>
         {errors.reason && (
           <div className={styles.fieldError}>{errors.reason}</div>
@@ -216,13 +220,18 @@ export default function ProgramForm() {
 
         <label className={styles.block}>
           <div className={styles.label}>Ghi chú cho admin/giảng viên</div>
-          <textarea
-            name="adminNote"
-            className={styles.textarea}
-            placeholder='VD: "Muốn học theo nhóm buổi tối" hoặc "Ưu tiên mentor có chuyên ngành AI"'
-            value={data.adminNote}
-            onChange={handleChange}
-          />
+          <div className={styles.textareaWrap}>
+            <textarea
+              name="adminNote"
+              className={styles.textarea}
+              placeholder='VD: "Muốn học theo nhóm buổi tối" hoặc "Ưu tiên mentor có chuyên ngành AI"'
+              value={data.adminNote}
+              onChange={handleChange}
+            />
+            <div className={styles.counter}>
+              {data.adminNote.length}/{maxChars} ký tự
+            </div>
+          </div>
           {errors.adminNote && (
             <div className={styles.fieldError}>{errors.adminNote}</div>
           )}

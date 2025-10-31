@@ -3,13 +3,15 @@ import HomePage from '../../features/home/HomePage'
 import MainLayout from '../../components/layout/MainLayout'
 import LoginPage from '@/features/login/LoginPage'
 import ProfilePage from '@/features/profile/pages/ProfilePage'
+import ProgramPage from '../../features/program/ProgramPage'
 import ProtectedRoute from './ProtectedRouter'
 
 const AppRouter = () => {
   return (
     <Routes>
       <Route path="/" element={<MainLayout />}>
-        <Route index element={<HomePage />} />
+  <Route index element={<HomePage />} />
+  <Route path="programs" element={<ProgramPage />} />
         <Route
           path="profile"
           element={
