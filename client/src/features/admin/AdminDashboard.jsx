@@ -306,7 +306,7 @@ export default function AdminDashboard() {
         return {
           ...s,
           status: isOpen ? "Đã đóng" : "Đang mở",
-          statusColor: isOpen
+          statusColor: isOpen``
             ? "text-green-600 bg-green-50"
             : "text-red-600 bg-red-50",
         };
@@ -353,25 +353,22 @@ export default function AdminDashboard() {
         <div className="space-x-2">
           <button
             onClick={() => setActiveTab("semesters")}
-            className={`px-3 py-1 rounded ${
-              activeTab === "semesters" ? "bg-blue-600 text-white" : "border"
-            }`}
+            className={`px-3 py-1 rounded ${activeTab === "semesters" ? "bg-blue-600 text-white" : "border"
+              }`}
           >
             Quản Lý Kỳ Đăng Ký
           </button>
           <button
             onClick={() => setActiveTab("survey")}
-            className={`px-3 py-1 rounded ${
-              activeTab === "survey" ? "bg-blue-600 text-white" : "border"
-            }`}
+            className={`px-3 py-1 rounded ${activeTab === "survey" ? "bg-blue-600 text-white" : "border"
+              }`}
           >
             Khảo Sát & Thống Kê
           </button>
           <button
             onClick={() => setActiveTab("users")}
-            className={`px-3 py-1 rounded ${
-              activeTab === "users" ? "bg-blue-600 text-white" : "border"
-            }`}
+            className={`px-3 py-1 rounded ${activeTab === "users" ? "bg-blue-600 text-white" : "border"
+              }`}
           >
             Quản Lý Người Dùng
           </button>
@@ -483,11 +480,10 @@ export default function AdminDashboard() {
                   </button>
                   <button
                     onClick={() => toggleSemesterStatus(s.id)}
-                    className={`mt-3 px-4 py-2 border rounded-lg ${
-                      s.status === "Đang mở"
+                    className={`mt-3 px-4 py-2 border rounded-lg ${s.status === "Đang mở"
                         ? "border-red-200 text-red-600"
                         : "border-green-200 text-green-600"
-                    }`}
+                      }`}
                   >
                     {s.status === "Đang mở" ? "Đóng" : "Mở"}
                   </button>
@@ -651,26 +647,24 @@ export default function AdminDashboard() {
                       </td>
                       <td className="py-4 px-4">
                         <span
-                          className={`inline-block px-3 py-1 rounded-full text-sm ${
-                            r.priority === "Cao"
+                          className={`inline-block px-3 py-1 rounded-full text-sm ${r.priority === "Cao"
                               ? "bg-red-50 text-red-600"
                               : r.priority === "Trung bình"
-                              ? "bg-yellow-50 text-yellow-700"
-                              : "bg-green-50 text-green-700"
-                          }`}
+                                ? "bg-yellow-50 text-yellow-700"
+                                : "bg-green-50 text-green-700"
+                            }`}
                         >
                           {r.priority}
                         </span>
                       </td>
                       <td className="py-4 px-4">
                         <span
-                          className={`inline-block px-3 py-1 rounded-full text-sm ${
-                            r.status === "Đã duyệt"
+                          className={`inline-block px-3 py-1 rounded-full text-sm ${r.status === "Đã duyệt"
                               ? "bg-green-50 text-green-700"
                               : r.status === "Chờ duyệt"
-                              ? "bg-yellow-50 text-yellow-700"
-                              : "bg-red-50 text-red-700"
-                          }`}
+                                ? "bg-yellow-50 text-yellow-700"
+                                : "bg-red-50 text-red-700"
+                            }`}
                         >
                           {r.status}
                         </span>
@@ -761,22 +755,20 @@ export default function AdminDashboard() {
                       </td>
                       <td className="py-4 px-4">
                         <span
-                          className={`inline-block px-3 py-1 text-sm rounded-full ${
-                            u.role === "tutor"
+                          className={`inline-block px-3 py-1 text-sm rounded-full ${u.role === "tutor"
                               ? "bg-black text-white"
                               : "bg-gray-100 text-gray-700"
-                          }`}
+                            }`}
                         >
                           {u.role === "tutor" ? "Giảng viên" : "Sinh viên"}
                         </span>
                       </td>
                       <td className="py-4 px-4">
                         <span
-                          className={`inline-block px-3 py-1 text-sm rounded-full ${
-                            u.status === "Hoạt động"
+                          className={`inline-block px-3 py-1 text-sm rounded-full ${u.status === "Hoạt động"
                               ? "bg-green-50 text-green-700"
                               : "bg-red-50 text-red-700"
-                          }`}
+                            }`}
                         >
                           {u.status === "Hoạt động" ? "Hoạt động" : "Đã chặn"}
                         </span>
