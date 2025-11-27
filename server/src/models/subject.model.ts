@@ -6,6 +6,7 @@ export interface ISubject extends Document {
   semesterId: Types.ObjectId
   department: string
   faculty: string
+  credits: number
   isActive: boolean
   description?: string
   tutorIds: Types.ObjectId[]
@@ -44,6 +45,15 @@ const SubjectSchema = new Schema<ISubject>(
     isActive: {
       type: Boolean,
       default: true
+    },
+    credits: {
+
+      type: Number,
+
+      required: [true, 'Số tín chỉ là bắt buộc'],
+
+      min: [1, 'Số tín chỉ phải lớn hơn 0'],
+
     },
     description: {
       type: String,
