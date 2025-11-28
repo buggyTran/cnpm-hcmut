@@ -1,7 +1,90 @@
 import { Response } from 'express'
 import { AuthRequest } from '@/middlewares/auth.middleware'
 import { error } from 'console'
-import { Semester, User, SemesterStatus } from '@/models'
+import { Semester, User, Subject, SemesterStatus } from '@/models'
+
+export const getAllSubject = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const semesterId = req.params.id
+
+    // Kiểm tra semester có tồn tại không
+    const semester = await Semester.findById(semesterId)
+    if (!semester) {
+      res.status(404).json({
+        success: false,
+        message: 'Semester not found'
+      })
+      return
+    }
+
+    // Lấy tất cả subjects của semester này và populate thông tin semester
+    const subjects = await Subject.find({ semesterId })
+      .populate('semesterId', 'code name academicYear semesterNumber startDate endDate status')
+      .populate('tutorIds', 'email fullName role')
+      .sort({ code: 1 })
+
+    res.status(200).json({
+      success: true,
+      message: 'Subjects retrieved successfully',
+      data: {
+        semester: semester,
+        subjects: subjects,
+        total: subjects.length
+      }
+    })
+
+  }
+  catch (error) {
+    console.error('GetAllSubject error:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error instanceof Error ? error.message : 'Can not Get All Subject'
+    })
+  }
+}
+
+export const createSubject = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const semesterId = req.params.id
+    const { code, name, description } = req.body
+    if (!code || !name) {
+      res.status(400).json({
+        success: false,
+        message: 'Missing required fields'
+      })
+      return
+    }
+    const semester = await Semester.findById(semesterId)
+    if (!semester && semester.status !== 'ACTIVE') {
+      res.status(404).json({
+        success: false,
+        message: 'Semester not found'
+      })
+    }
+
+    const newSubject = await Subject.create({
+      semesterId,
+      code,
+      name,
+      description
+    })
+    res.status(201).json({
+      success: true,
+      message: 'Subject created successfully',
+      data: newSubject
+    })
+
+  }
+  catch (error) {
+    console.error('CreateSubject error:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
+  }
+}
 
 export const createSemester = async (req: AuthRequest, res: Response): Promise<void> => {
   try {

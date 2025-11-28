@@ -35,12 +35,14 @@ const SubjectSchema = new Schema<ISubject>(
     department: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
+      default: 'CNTT'
     },
     faculty: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
+      default: 'FICT'
     },
     isActive: {
       type: Boolean,
@@ -52,7 +54,7 @@ const SubjectSchema = new Schema<ISubject>(
 
       required: [true, 'Số tín chỉ là bắt buộc'],
 
-      min: [1, 'Số tín chỉ phải lớn hơn 0'],
+      default: 3
 
     },
     description: {
