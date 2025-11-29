@@ -7,6 +7,8 @@ import ProgramPage from "../../features/program/ProgramPage";
 import ProtectedRoute from "./ProtectedRouter";
 import AdminProtectedRoute from "./AdminProtectedRoute";
 import ExplorePage from "../../features/explore/ExplorePage.jsx";
+import TutorListPage from "../../features/explore/TutorListPage.jsx";
+import TutorProfilePage from "../../features/explore/TutorProfilePage.jsx";
 import AdminDashboard from "../../features/admin/AdminDashboard";
 import AdminLayout from "../../features/admin/AdminLayout";
 import SemesterCoursesPage from "../../features/admin/SemesterCoursesPage";
@@ -25,6 +27,22 @@ const AppRouter = () => {
           element={
             <ProtectedRoute>
               <ExplorePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="explore/:subjectId"
+          element={
+            <ProtectedRoute>
+              <TutorListPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="tutor-profile/:tutorId"
+          element={
+            <ProtectedRoute>
+              <TutorProfilePage />
             </ProtectedRoute>
           }
         />

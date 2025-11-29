@@ -1,46 +1,51 @@
-import { Users, BookOpen, Award } from 'lucide-react';
+import { BookOpen } from "lucide-react";
 
 const SubjectCard = ({ subject, onClick }) => {
   return (
-    <div
-      onClick={onClick}
-      className="card-interactive group"
-    >
-      {/* Header với gradient */}
-      <div className="h-24 bg-gradient-to-br from-sky-400 to-blue-600 rounded-t-lg -mx-6 -mt-6 mb-4 flex items-center justify-center">
-        <BookOpen className="text-white" size={40} />
+    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col h-full">
+      {/* Image */}
+      <div className="h-48 overflow-hidden relative group">
+        <img
+          src={subject.image}
+          alt={subject.name}
+          className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+        />
+        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300" />
       </div>
 
       {/* Content */}
-      <div className="space-y-3">
-        <div>
-          <div className="flex items-start justify-between mb-2">
-            <h3 className="heading-4 group-hover:text-sky-500 transition-colors">
-              {subject.name}
-            </h3>
-            <span className="px-2 py-1 bg-sky-100 text-sky-700 text-xs font-semibold rounded">
-              {subject.code}
-            </span>
-          </div>
-          <p className="text-body-sm text-gray-600">{subject.department}</p>
+      <div className="p-5 flex flex-col flex-1">
+        {/* Department */}
+        <div className="flex items-center gap-2 text-sky-500 mb-2">
+          <BookOpen size={16} />
+          <span className="text-sm font-medium">{subject.department}</span>
         </div>
 
-        <p className="text-body-sm line-clamp-2">{subject.description}</p>
+        {/* Title */}
+        <h3
+          className="text-lg font-bold text-gray-900 mb-2 line-clamp-1"
+          title={subject.name}
+        >
+          {subject.name}
+        </h3>
 
-        <div className="flex items-center justify-between pt-3 border-t border-gray-200">
-          <div className="flex items-center gap-2 text-body-sm">
-            <Users size={16} className="text-green-500" />
-            <span><strong>{subject.totalTutors}</strong> gia sư</span>
-          </div>
-          <div className="flex items-center gap-2 text-body-sm">
-            <Award size={16} className="text-purple-500" />
-            <span><strong>{subject.credits}</strong> tín chỉ</span>
-          </div>
+        {/* Description */}
+        <p className="text-gray-600 text-sm mb-4 line-clamp-3 flex-1">
+          {subject.description}
+        </p>
+
+        {/* Footer */}
+        <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
+          <span className="text-gray-500 text-sm">
+            {subject.totalTutors} giảng viên
+          </span>
+          <button
+            onClick={onClick}
+            className="bg-sky-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-sky-600 transition-colors"
+          >
+            Xem giảng viên
+          </button>
         </div>
-
-        <button className="btn-primary w-full mt-2">
-          Xem gia sư
-        </button>
       </div>
     </div>
   );
