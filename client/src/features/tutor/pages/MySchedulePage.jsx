@@ -9,14 +9,20 @@ import {
   MessageSquare,
   X,
   ExternalLink,
+  FileText,
 } from "lucide-react";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const MySchedulePage = () => {
+  const { user } = useAuthStore();
+  const [viewMode, setViewMode] = useState(
+    user?.roles?.includes("TUTOR") ? "tutor" : "student"
+  );
   const [activeMainTab, setActiveMainTab] = useState("approved");
   const [activeSubTab, setActiveSubTab] = useState("upcoming");
 
-  // Mock Data matching the screenshot
-  const stats = [
+  // Student Mock Data
+  const studentStats = [
     {
       id: "upcoming",
       label: "Sắp tới",
@@ -55,7 +61,7 @@ const MySchedulePage = () => {
     },
   ];
 
-  const sessions = [
+  const studentSessions = [
     {
       id: 1,
       tutorName: "PGS.TS. Trần Thị Bình",
@@ -101,7 +107,6 @@ const MySchedulePage = () => {
       subStatus: "upcoming",
       statusText: "Đã xác nhận",
     },
-    // Add dummy data for other tabs to match counts
     {
       id: 4,
       tutorName: "TS. Phạm Minh Tuấn",
@@ -164,8 +169,167 @@ const MySchedulePage = () => {
     },
   ];
 
+  // Tutor Mock Data
+  const tutorStats = [
+    {
+      id: "upcoming",
+      label: "Sắp tới",
+      count: 4,
+      icon: Calendar,
+      color: "text-blue-600",
+      bg: "bg-blue-50",
+      borderColor: "border-blue-100",
+    },
+    {
+      id: "completed",
+      label: "Hoàn thành",
+      count: 1,
+      icon: CheckCircle,
+      color: "text-green-600",
+      bg: "bg-green-50",
+      borderColor: "border-green-100",
+    },
+    {
+      id: "pending",
+      label: "Chờ duyệt",
+      count: 1,
+      icon: Clock,
+      color: "text-yellow-600",
+      bg: "bg-yellow-50",
+      borderColor: "border-yellow-100",
+    },
+    {
+      id: "cancelled",
+      label: "Đã hủy",
+      count: 1,
+      icon: XCircle,
+      color: "text-red-600",
+      bg: "bg-red-50",
+      borderColor: "border-red-100",
+    },
+  ];
+
+  const tutorSessions = [
+    {
+      id: 1,
+      studentName: "Lê Thị C",
+      mssv: "2013456",
+      avatar: "C",
+      avatarColor: "bg-cyan-500",
+      subject: "Cấu Trúc Dữ Liệu & Giải Thuật",
+      topic: "Đồ thị - BFS/DFS",
+      date: "2025-10-15",
+      time: "09:00 - 11:00",
+      type: "offline",
+      location: "Phòng H1-101, CS1",
+      status: "approved",
+      subStatus: "upcoming",
+      statusText: "Đã xác nhận",
+    },
+    {
+      id: 2,
+      studentName: "Phạm Minh D",
+      mssv: "2011234",
+      avatar: "D",
+      avatarColor: "bg-teal-500",
+      subject: "Lập Trình Thi Đấu",
+      topic: "Quy hoạch động",
+      date: "2025-10-16",
+      time: "15:00 - 17:00",
+      type: "online",
+      meetingLink: "https://meet.google.com/xyz-uvwx-rst",
+      status: "approved",
+      subStatus: "upcoming",
+      statusText: "Đã xác nhận",
+    },
+    {
+      id: 3,
+      studentName: "Nguyễn Thị E",
+      mssv: "2014567",
+      avatar: "E",
+      avatarColor: "bg-sky-500",
+      subject: "Thiết Kế & Phân Tích Thuật Toán",
+      topic: "Divide & Conquer",
+      date: "2025-10-18",
+      time: "10:00 - 12:00",
+      type: "offline",
+      location: "Phòng H2-205, CS2",
+      status: "approved",
+      subStatus: "upcoming",
+      statusText: "Đã xác nhận",
+    },
+    {
+      id: 4,
+      studentName: "Hoàng Văn F",
+      mssv: "2012678",
+      avatar: "F",
+      avatarColor: "bg-purple-500",
+      subject: "Cấu Trúc Dữ Liệu & Giải Thuật",
+      topic: "Thuật toán sắp xếp",
+      date: "2025-10-20",
+      time: "14:00 - 16:00",
+      type: "online",
+      meetingLink: "https://meet.google.com/klm-nopq-rst",
+      status: "approved",
+      subStatus: "upcoming",
+      statusText: "Đã xác nhận",
+    },
+    {
+      id: 5,
+      studentName: "Đỗ Thị H",
+      mssv: "2015789",
+      avatar: "H",
+      avatarColor: "bg-teal-500",
+      subject: "Cơ Sở Dữ Liệu",
+      topic: "Database Design",
+      date: "2025-10-22",
+      time: "14:00 - 16:00",
+      type: "offline",
+      location: "Phòng H1-201, CS1",
+      status: "pending",
+      subStatus: "pending",
+      statusText: "Chờ xác nhận",
+    },
+    {
+      id: 6,
+      studentName: "Trần Văn B",
+      mssv: "2012345",
+      avatar: "B",
+      avatarColor: "bg-teal-500",
+      subject: "Cấu Trúc Dữ Liệu & Giải Thuật",
+      topic: "Cây AVL",
+      date: "2025-10-10",
+      time: "14:00 - 16:00",
+      type: "online",
+      meetingLink: "https://meet.google.com/abc-defg-hij",
+      status: "approved",
+      subStatus: "completed",
+      statusText: "Đã hoàn thành",
+    },
+    {
+      id: 7,
+      studentName: "Ngô Văn I",
+      mssv: "2016890",
+      avatar: "I",
+      avatarColor: "bg-cyan-500",
+      subject: "Lập Trình Thi Đấu",
+      topic: "Graph Theory",
+      date: "2025-10-11",
+      time: "10:00 - 12:00",
+      type: "online",
+      meetingLink: "https://meet.google.com/def-ghi-456",
+      status: "approved",
+      subStatus: "cancelled",
+      statusText: "Đã hủy",
+    },
+  ];
+
+  const currentStats = viewMode === "tutor" ? tutorStats : studentStats;
+  const currentSessions =
+    viewMode === "tutor" ? tutorSessions : studentSessions;
+
   // Filter logic
-  const filteredSessions = sessions.filter((session) => {
+  const filteredSessions = currentSessions.filter((session) => {
     if (activeMainTab === "pending") {
       return session.status === "pending";
     }
@@ -176,16 +340,49 @@ const MySchedulePage = () => {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Lịch Của Tôi</h1>
-          <p className="text-gray-600 mt-1">
-            Quản lý và theo dõi các buổi mentoring của bạn
-          </p>
+        <div className="mb-8 flex justify-between items-end">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              {viewMode === "tutor" ? "Lịch Dạy" : "Lịch Của Tôi"}
+            </h1>
+            <p className="text-gray-600 mt-1">
+              {viewMode === "tutor"
+                ? "Quản lý và theo dõi các buổi dạy của bạn"
+                : "Quản lý và theo dõi các buổi mentoring của bạn"}
+            </p>
+          </div>
+
+          {/* Role Switcher if user has both roles */}
+          {user?.roles?.includes("TUTOR") &&
+            user?.roles?.includes("STUDENT") && (
+              <div className="flex bg-gray-200 p-1 rounded-lg">
+                <button
+                  onClick={() => setViewMode("student")}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                    viewMode === "student"
+                      ? "bg-white text-gray-900 shadow-sm"
+                      : "text-gray-600 hover:text-gray-900"
+                  }`}
+                >
+                  Học viên
+                </button>
+                <button
+                  onClick={() => setViewMode("tutor")}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                    viewMode === "tutor"
+                      ? "bg-white text-gray-900 shadow-sm"
+                      : "text-gray-600 hover:text-gray-900"
+                  }`}
+                >
+                  Giáo viên
+                </button>
+              </div>
+            )}
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {stats.map((stat) => (
+          {currentStats.map((stat) => (
             <div
               key={stat.id}
               className={`bg-white p-4 rounded-xl border ${stat.borderColor} shadow-sm flex items-center space-x-4`}
@@ -217,7 +414,7 @@ const MySchedulePage = () => {
                   : "text-gray-500 hover:text-gray-700"
               }`}
             >
-              Đã duyệt (5)
+              Đã duyệt ({viewMode === "tutor" ? 6 : 5})
             </button>
             <button
               onClick={() => setActiveMainTab("pending")}
@@ -227,7 +424,7 @@ const MySchedulePage = () => {
                   : "text-gray-500 hover:text-gray-700"
               }`}
             >
-              Chờ duyệt (2)
+              Chờ duyệt ({viewMode === "tutor" ? 1 : 2})
             </button>
           </div>
 
@@ -242,7 +439,7 @@ const MySchedulePage = () => {
                     : "text-gray-500 hover:text-gray-700"
                 }`}
               >
-                Sắp tới (3)
+                Sắp tới ({viewMode === "tutor" ? 4 : 3})
               </button>
               <button
                 onClick={() => setActiveSubTab("completed")}
@@ -303,8 +500,15 @@ const MySchedulePage = () => {
                   <div className="flex-1">
                     <div className="mb-1">
                       <h3 className="font-semibold text-gray-900 text-lg">
-                        {session.tutorName}
+                        {viewMode === "tutor"
+                          ? session.studentName
+                          : session.tutorName}
                       </h3>
+                      {viewMode === "tutor" && (
+                        <div className="text-sm text-gray-500 mb-1">
+                          MSSV: {session.mssv}
+                        </div>
+                      )}
                       <div className="inline-block px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-medium rounded mt-1">
                         {session.subject}
                       </div>
@@ -365,6 +569,13 @@ const MySchedulePage = () => {
                             <Video className="w-4 h-4" />
                             Tham gia
                           </a>
+                        )}
+                      {viewMode === "tutor" &&
+                        session.subStatus === "completed" && (
+                          <button className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium text-sm">
+                            <FileText className="w-4 h-4" />
+                            Sửa nhận xét
+                          </button>
                         )}
                       <button className="flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm">
                         <MessageSquare className="w-4 h-4" />
