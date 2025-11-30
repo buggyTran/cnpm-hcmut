@@ -1,6 +1,16 @@
-import { useState, useEffect } from 'react';
-import { X, Calendar, Clock, Check } from 'lucide-react';
-import { getMockTutorSchedule } from '../data/mockdata';
+import { useState, useEffect } from "react";
+import {
+  X,
+  Calendar,
+  Clock,
+  CheckCircle,
+  Video,
+  MapPin,
+  User,
+  Users,
+  AlertCircle,
+} from "lucide-react";
+import { getMockTutorSchedule } from "../data/mockdata";
 
 const TutorScheduleModal = ({ isOpen, onClose, tutor, subject }) => {
   const [schedule, setSchedule] = useState([]);
@@ -15,158 +25,212 @@ const TutorScheduleModal = ({ isOpen, onClose, tutor, subject }) => {
     }
   }, [isOpen, tutor]);
 
-  const handleSlotClick = (date, slot) => {
+  const handleSlotClick = (slot) => {
     if (!slot.available) return;
 
-    const slotId = `${date}-${slot.time}`;
-    setSelectedSlots(prev => {
-      if (prev.includes(slotId)) {
-        return prev.filter(id => id !== slotId);
+    setSelectedSlots((prev) => {
+      if (prev.includes(slot.id)) {
+        return prev.filter((id) => id !== slot.id);
       } else {
-        return [...prev, slotId];
+        return [...prev, slot.id];
       }
     });
   };
 
-  const isSlotSelected = (date, slot) => {
-    return selectedSlots.includes(`${date}-${slot.time}`);
+  const isSlotSelected = (slot) => {
+    return selectedSlots.includes(slot.id);
   };
 
   const handleRegister = () => {
     if (selectedSlots.length === 0) {
-      alert('Vui lòng chọn ít nhất 1 khung giờ!');
+      alert("Vui lòng chọn ít nhất 1 khung giờ!");
       return;
     }
 
     setLoading(true);
-    
+
     // Giả lập API call
     setTimeout(() => {
       setLoading(false);
-      alert(`Đăng ký thành công!\n\nGia sư: ${tutor.name}\nMôn: ${subject.name}\nSố buổi đã chọn: ${selectedSlots.length}\n\nGia sư sẽ liên hệ với bạn sớm!`);
+      alert(
+        `Đăng ký thành công!\n\nGia sư: ${tutor.name}\nMôn: ${subject.name}\nSố buổi đã chọn: ${selectedSlots.length}\n\nGia sư sẽ liên hệ với bạn sớm!`
+      );
       onClose();
     }, 1500);
   };
 
   if (!isOpen || !tutor) return null;
 
+  const availableSlots = schedule.filter((s) => s.available);
+  const fullSlots = schedule.filter((s) => !s.available);
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-5xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto flex flex-col">
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-          <div>
-            <h2 className="heading-3">Đặt lịch với {tutor.name}</h2>
-            <p className="text-body-sm text-gray-600 mt-1">
-              Môn: <strong>{subject.name}</strong>
-            </p>
+        <div className="p-6 border-b border-gray-100 flex justify-between items-start">
+          <div className="flex gap-4">
+            <div
+              className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shrink-0`}
+              style={{
+                backgroundColor: tutor.avatar.includes("background=")
+                  ? `#${tutor.avatar.split("background=")[1].split("&")[0]}`
+                  : "#0ea5e9",
+              }}
+            >
+              {tutor.name
+                .split(".")
+                .pop()
+                .trim()
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .slice(0, 2)}
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">{tutor.name}</h2>
+              <p className="text-gray-500 text-sm mt-1 max-w-md">
+                Chọn slot thời gian phù hợp với bạn. Hệ thống sẽ tự động kiểm
+                tra trùng lịch.
+              </p>
+            </div>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition"
+            className="text-gray-400 hover:text-gray-600 transition-colors"
           >
             <X size={24} />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6">
-          {/* Instructions */}
-          <div className="bg-sky-50 border border-sky-200 rounded-lg p-4 mb-6">
-            <div className="flex items-start gap-3">
-              <Calendar className="text-sky-500 flex-shrink-0 mt-1" size={20} />
-              <div>
-                <h3 className="heading-5 mb-1">Hướng dẫn đặt lịch</h3>
-                <p className="text-body-sm">
-                  Chọn các khung giờ phù hợp với lịch học của bạn. 
-                  Bạn có thể chọn nhiều khung giờ. Sau khi đăng ký, gia sư sẽ xác nhận và liên hệ với bạn.
-                </p>
-              </div>
+        <div className="p-6 overflow-y-auto flex-1">
+          {/* Available Slots */}
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-4">
+              <CheckCircle size={20} className="text-green-500" />
+              <h3 className="font-bold text-gray-900">
+                Slot có sẵn ({availableSlots.length})
+              </h3>
+            </div>
+
+            <div className="space-y-3">
+              {availableSlots.map((slot) => {
+                const isSelected = isSlotSelected(slot);
+                return (
+                  <div
+                    key={slot.id}
+                    onClick={() => handleSlotClick(slot)}
+                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                      isSelected
+                        ? "border-sky-500 bg-sky-50"
+                        : "border-gray-200 hover:border-sky-200 hover:bg-gray-50"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      <Calendar size={18} className="text-gray-500" />
+                      <span className="font-medium text-gray-900">
+                        {slot.dayName}
+                      </span>
+                      <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
+                      <Clock size={18} className="text-gray-500" />
+                      <span className="text-gray-600">{slot.time}</span>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                      <span
+                        className={`flex items-center px-2.5 py-1 rounded-md text-xs font-medium border ${
+                          slot.format === "Online"
+                            ? "bg-blue-50 text-blue-600 border-blue-100"
+                            : "bg-green-50 text-green-600 border-green-100"
+                        }`}
+                      >
+                        {slot.format === "Online" ? (
+                          <Video size={14} className="mr-1" />
+                        ) : (
+                          <MapPin size={14} className="mr-1" />
+                        )}
+                        {slot.format}
+                      </span>
+
+                      <span
+                        className={`flex items-center px-2.5 py-1 rounded-md text-xs font-medium border ${
+                          slot.type === "1-1"
+                            ? "bg-purple-50 text-purple-600 border-purple-100"
+                            : "bg-orange-50 text-orange-600 border-orange-100"
+                        }`}
+                      >
+                        {slot.type === "1-1" ? (
+                          <User size={14} className="mr-1" />
+                        ) : (
+                          <Users size={14} className="mr-1" />
+                        )}
+                        {slot.type} {slot.members && `(${slot.members})`}
+                      </span>
+                    </div>
+
+                    {slot.location && (
+                      <div className="mt-3 flex items-center gap-2 text-sm text-gray-500">
+                        <MapPin size={16} />
+                        {slot.location}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
-          {/* Schedule Grid */}
-          <div className="space-y-6">
-            {schedule.map((day) => (
-              <div key={day.date} className="border border-gray-200 rounded-lg p-4">
-                <div className="flex items-center gap-3 mb-4">
-                  <Calendar className="text-sky-500" size={20} />
-                  <div>
-                    <h3 className="heading-5">{day.dayName}</h3>
-                    <p className="text-body-sm text-gray-600">
-                      {new Date(day.date).toLocaleDateString('vi-VN', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric'
-                      })}
-                    </p>
+          {/* Full Slots */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <AlertCircle size={20} className="text-gray-400" />
+              <h3 className="font-bold text-gray-500">
+                Đã đầy ({fullSlots.length})
+              </h3>
+            </div>
+
+            <div className="space-y-3">
+              {fullSlots.map((slot) => (
+                <div
+                  key={slot.id}
+                  className="p-4 rounded-xl border border-gray-100 bg-gray-50 opacity-60 cursor-not-allowed"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <Calendar size={18} className="text-gray-400" />
+                      <span className="font-medium text-gray-500">
+                        {slot.dayName}
+                      </span>
+                      <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
+                      <Clock size={18} className="text-gray-400" />
+                      <span className="text-gray-500">{slot.time}</span>
+                    </div>
+                    <span className="px-2 py-1 bg-gray-200 text-gray-500 text-xs rounded font-medium">
+                      Đã đầy
+                    </span>
                   </div>
                 </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                  {day.slots.map((slot, index) => {
-                    const selected = isSlotSelected(day.date, slot);
-                    const available = slot.available;
-
-                    return (
-                      <button
-                        key={index}
-                        onClick={() => handleSlotClick(day.date, slot)}
-                        disabled={!available}
-                        className={`
-                          p-3 rounded-lg border-2 transition-all duration-200
-                          flex flex-col items-center gap-2
-                          ${available
-                            ? selected
-                              ? 'border-sky-500 bg-sky-50 text-sky-700'
-                              : 'border-gray-200 hover:border-sky-300 hover:bg-sky-50'
-                            : 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
-                          }
-                        `}
-                      >
-                        <Clock size={18} />
-                        <span className="text-sm font-medium text-center">
-                          {slot.time}
-                        </span>
-                        {selected && (
-                          <Check size={16} className="text-sky-500" />
-                        )}
-                        {!available && (
-                          <span className="text-xs">Đã đặt</span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Summary & Register */}
-          <div className="mt-6 border-t pt-6">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <div>
-                <p className="text-body">
-                  Đã chọn: <strong className="text-sky-500">{selectedSlots.length}</strong> khung giờ
-                </p>
-                {selectedSlots.length > 0 && (
-                  <p className="text-body-sm text-gray-600 mt-1">
-                    Tổng chi phí dự kiến: <strong className="text-green-600">
-                      {(selectedSlots.length * 2 * tutor.hourlyRate).toLocaleString()}đ
-                    </strong> (mỗi buổi 2 giờ)
-                  </p>
-                )}
-              </div>
-
-              <button
-                onClick={handleRegister}
-                disabled={selectedSlots.length === 0 || loading}
-                className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed min-w-[200px]"
-              >
-                {loading ? 'Đang xử lý...' : 'Đăng ký ngay'}
-              </button>
+              ))}
             </div>
           </div>
+        </div>
+
+        {/* Footer */}
+        <div className="p-6 border-t border-gray-100 flex gap-3">
+          <button
+            onClick={onClose}
+            className="flex-1 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            Hủy
+          </button>
+          <button
+            onClick={handleRegister}
+            disabled={selectedSlots.length === 0 || loading}
+            className="flex-1 py-2.5 bg-sky-500 text-white font-medium rounded-lg hover:bg-sky-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? "Đang xử lý..." : "Xác nhận đặt lịch"}
+          </button>
         </div>
       </div>
     </div>

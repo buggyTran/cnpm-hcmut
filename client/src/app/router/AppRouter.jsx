@@ -7,10 +7,15 @@ import ProgramPage from "../../features/program/ProgramPage";
 import ProtectedRoute from "./ProtectedRouter";
 import AdminProtectedRoute from "./AdminProtectedRoute";
 import ExplorePage from "../../features/explore/ExplorePage.jsx";
+import TutorListPage from "../../features/explore/TutorListPage.jsx";
+import TutorProfilePage from "../../features/explore/TutorProfilePage.jsx";
 import AdminDashboard from "../../features/admin/AdminDashboard";
 import AdminLayout from "../../features/admin/AdminLayout";
 import SemesterCoursesPage from "../../features/admin/SemesterCoursesPage";
 import CourseTeachersPage from "../../features/admin/CourseTeachersPage";
+import MySchedulePage from "../../features/tutor/pages/MySchedulePage";
+import ManageSchedulePage from "../../features/tutor/pages/ManageSchedulePage";
+
 const AppRouter = () => {
   return (
     <Routes>
@@ -26,10 +31,42 @@ const AppRouter = () => {
           }
         />
         <Route
+          path="explore/:subjectId"
+          element={
+            <ProtectedRoute>
+              <TutorListPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="tutor-profile/:tutorId"
+          element={
+            <ProtectedRoute>
+              <TutorProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="profile"
           element={
             <ProtectedRoute>
               <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="my-schedule"
+          element={
+            <ProtectedRoute>
+              <MySchedulePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="manage-schedule"
+          element={
+            <ProtectedRoute>
+              <ManageSchedulePage />
             </ProtectedRoute>
           }
         />
