@@ -28,7 +28,7 @@ export const createSlot = async (req: Request, res: Response) => {
       date,
       startTime,
       endTime,
-      type, // 'online' | 'offline'
+      type,
       link,
       location,
       capacity,
@@ -419,8 +419,8 @@ export const toggleSlotStatus = async (req: Request, res: Response) => {
     }
 
     // Toggle giữa AVAILABLE và CANCELLED
-    slot.status = slot.status === SlotStatus.AVAILABLE 
-      ? SlotStatus.CANCELLED 
+    slot.status = slot.status === SlotStatus.AVAILABLE
+      ? SlotStatus.CANCELLED
       : SlotStatus.AVAILABLE
 
     await slot.save()
