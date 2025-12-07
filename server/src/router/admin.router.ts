@@ -1,10 +1,10 @@
 import {
     createSemester,
     getAllUser,
-    updateUserStatus, updateSemesterStatus, getAllSemester,
+    updateUserStatus, updateSemesterStatus, getAllSemester, getActiveSemester,
     createSubject,
     getAllSubject, getSemesterInfor, getSubjectInfor,
-    assignTutorToSubject, removeTutorFromSubject, getTutorsBySubject
+    assignTutorToSubject, removeTutorFromSubject, getTutorsBySubject, getTutorSlotsBySubject
 } from '@/controller/admin.controller'
 import { authorize } from '@/middlewares/auth.middleware'
 import { UserRole } from '@/models'
@@ -14,10 +14,13 @@ const router = express.Router()
 // ============== PUBLIC APIs (chỉ cần authenticate) ==============
 // Ai đăng nhập cũng có thể xem
 router.get('/get-all-semester', getAllSemester)
+router.get('/get-active-semester', getActiveSemester)
 router.get('/get-semester/:id', getSemesterInfor)
 router.get('/get-all-subject/:id', getAllSubject)
 router.get('/get-subject/:id', getSubjectInfor)
 router.get('/get-tutors-by-subject/:id', getTutorsBySubject)
+router.get('/get-tutor-slots', getTutorSlotsBySubject)
+
 
 
 // ============== ADMIN ONLY APIs ==============

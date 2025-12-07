@@ -22,6 +22,11 @@ export const adminService = {
     return response
   },
 
+  getActiveSemester: async () => {
+    const response = await axios.get('/admin/get-active-semester')
+    return response
+  },
+
   updateSemesterStatus: async (semesterId, status) => {
     const response = await axios.patch(`/admin/update-semester-status/${semesterId}`, { status })
     return response
@@ -62,6 +67,15 @@ export const adminService = {
   // Lấy danh sách giảng viên của môn học
   getTutorsBySubject: async (subjectId) => {
     const response = await axios.get(`/admin/get-tutors-by-subject/${subjectId}`)
+    console.log('getTutorsBySubject response:', response)
+    return response
+  },
+
+  // Lấy lịch rảnh của giảng viên theo môn học
+  getTutorSlotsBySubject: async (tutorId, subjectId) => {
+    const response = await axios.get('/admin/get-tutor-slots', {
+      params: { tutorId, subjectId }
+    })
     return response
   }
 }

@@ -90,10 +90,8 @@ export const postProgram = async (req: AuthRequest, res: Response): Promise<void
       return
     }
 
-    const activeSemester = await Semester.findOne({ status: 'ACTIVE' })
-    const semesterId = activeSemester?._id
-
     const {
+      semesterId,
       problem,
       problemDetail,
       preferredMode,
@@ -103,7 +101,7 @@ export const postProgram = async (req: AuthRequest, res: Response): Promise<void
     } = req.body
 
     // Validate required fields
-    if (!problem || !preferredMode || !sessionType) {
+    if (!semesterId || !problem || !preferredMode || !sessionType) {
       res.status(400).json({
         success: false,
         message: 'Missing required fields'

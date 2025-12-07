@@ -1,6 +1,6 @@
 import { Response } from 'express'
 import { AuthRequest } from '@/middlewares/auth.middleware'
-import { Semester, User, Subject, SemesterStatus, UserRole } from '@/models'
+import { Semester, User, Subject, SemesterStatus, UserRole, Slot } from '@/models'
 
 export const getAllSubject = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
@@ -305,6 +305,31 @@ export const getAllSemester = async (req: AuthRequest, res: Response): Promise<v
   }
 }
 
+export const getActiveSemester = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const semester = await Semester.findOne({ status: SemesterStatus.ACTIVE })
+    if (!semester) {
+      res.status(404).json({
+        success: false,
+        message: 'No active semester found'
+      })
+      return
+    }
+    res.status(200).json({
+      success: true,
+      message: 'Active semester retrieved successfully',
+      data: semester
+    })
+  } catch (error) {
+    console.error('GetActiveSemester error:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error instanceof Error ? error.message : 'Can not Get Active Semester'
+    })
+  }
+}
+
 export const getSemesterInfor = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const semesterId = req.params.id
@@ -550,6 +575,65 @@ export const getTutorsBySubject = async (req: AuthRequest, res: Response): Promi
       success: false,
       message: 'Internal server error',
       error: error instanceof Error ? error.message : 'Can not get tutors by subject'
+    })
+  }
+}
+
+export const getTutorSlotsBySubject = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { tutorId, subjectId } = req.query
+
+    if (!tutorId || !subjectId) {
+      res.status(400).json({
+        success: false,
+        message: 'Missing required fields: tutorId and subjectId'
+      })
+      return
+    }
+
+    // Lấy semester đang active
+    const activeSemester = await Semester.findOne({ status: SemesterStatus.ACTIVE })
+    if (!activeSemester) {
+      res.status(200).json({
+        success: true,
+        message: 'No active semester found',
+        data: []
+      })
+      return
+    }
+
+    const currentDate = new Date()
+    currentDate.setHours(0, 0, 0, 0)
+
+    const slots = await Slot.find({
+      tutorId,
+      subjectId,
+      semesterId: activeSemester._id,
+      status: 'AVAILABLE',
+      date: { $gte: currentDate }
+    })
+      .sort({ date: 1, startTime: 1 })
+      .populate('tutorId', 'displayName email avatar')
+      .populate('subjectId', 'name code')
+
+    const days = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7']
+    const slotsWithDay = slots.map((slot) => ({
+      ...slot.toObject(),
+      dayOfWeek: days[new Date(slot.date).getDay()]
+    }))
+
+    res.status(200).json({
+      success: true,
+      message: 'Slots retrieved successfully',
+      data: slotsWithDay
+    })
+
+  } catch (error) {
+    console.error('GetTutorSlotsBySubject error:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error instanceof Error ? error.message : 'Unknown error'
     })
   }
 }

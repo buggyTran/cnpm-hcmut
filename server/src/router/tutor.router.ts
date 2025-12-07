@@ -28,4 +28,5 @@ router.delete('/slots/:slotId', deleteSlot)
 
 router.patch('/slots/:slotId/toggle', toggleSlotStatus)
 
+
 export default router
