@@ -5,7 +5,9 @@ import {
   updateSlot,
   deleteSlot,
   toggleSlotStatus,
-  getMySubjects
+  getMySubjects,
+  getTutorBookings,
+  cancelBookingByTutor
 } from '@/controller/tutor.controller'
 import { authorize } from '@/middlewares/auth.middleware'
 import { UserRole } from '@/models'
@@ -16,6 +18,12 @@ const router = express.Router()
 
 // GET /api/tutor/my-subjects - Lấy danh sách môn học được phân công
 router.get('/my-subjects', getMySubjects)
+
+// GET /api/tutor/my-bookings - Lấy danh sách lịch dạy
+router.get('/my-bookings', getTutorBookings)
+
+// POST /api/tutor/cancel-booking - Hủy lịch dạy
+router.post('/cancel-booking', cancelBookingByTutor)
 
 // POST /api/tutor/slots - Tạo lịch rảnh mới
 router.post('/slots', createSlot)

@@ -11,6 +11,8 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { adminService } from "../../../service/admin.service";
+import { userService } from "../../../service/user.service";
+import { toast } from "react-toastify";
 
 const TutorScheduleModal = ({ isOpen, onClose, tutor, subject }) => {
   const [schedule, setSchedule] = useState([]);
@@ -33,7 +35,6 @@ const TutorScheduleModal = ({ isOpen, onClose, tutor, subject }) => {
 
           const response = await adminService.getTutorSlotsBySubject(tutorId, subjectId);
           if (response.success) {
-            console.log("Fetched slots:", response.data);
             const mappedSlots = response.data.map(slot => ({
               id: slot._id,
               available: true,
@@ -74,22 +75,33 @@ const TutorScheduleModal = ({ isOpen, onClose, tutor, subject }) => {
     return selectedSlots.includes(slot.id);
   };
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (selectedSlots.length === 0) {
-      alert("Vui lòng chọn ít nhất 1 khung giờ!");
+      toast.error("Vui lòng chọn ít nhất 1 khung giờ!");
       return;
     }
 
     setLoading(true);
 
-    // Giả lập API call
-    setTimeout(() => {
-      setLoading(false);
-      alert(
+    try {
+      // Call API for each selected slot
+      // Note: Ideally backend should support bulk booking, but for now we loop
+      const promises = selectedSlots.map(slotId =>
+        userService.bookSlot({ slotId })
+      );
+
+      await Promise.all(promises);
+
+      toast.success(
         `Đăng ký thành công!\n\nGia sư: ${tutor.name}\nMôn: ${subject.name}\nSố buổi đã chọn: ${selectedSlots.length}\n\nGia sư sẽ liên hệ với bạn sớm!`
       );
       onClose();
-    }, 1500);
+    } catch (error) {
+      console.error("Booking failed", error);
+      toast.error(error.response?.data?.message || "Đăng ký thất bại. Vui lòng thử lại.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!isOpen || !tutor) return null;

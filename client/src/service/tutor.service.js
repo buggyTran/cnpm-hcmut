@@ -35,5 +35,18 @@ export const tutorService = {
   toggleSlotStatus: async (slotId) => {
     const response = await axios.patch(`/tutor/slots/${slotId}/toggle`)
     return response
+  },
+
+  // Lấy danh sách lịch dạy (bookings)
+  getTutorBookings: async () => {
+    const response = await axios.get('/tutor/my-bookings')
+    return response
+  },
+
+  // Hủy lịch dạy
+  cancelBooking: async (bookingId, reason) => {
+    const response = await axios.post('/tutor/cancel-booking', { bookingId, reason })
+    return response
   }
 }
+

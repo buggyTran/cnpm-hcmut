@@ -14,5 +14,20 @@ export const userService = {
   updateUserInfo: async (data) => {
     const response = await axios.patch('/users/update-user-infor', data)
     return response
+  },
+
+  bookSlot: async (data) => {
+    const response = await axios.post('/users/book-slot', data)
+    return response
+  },
+
+  getMyBookings: async () => {
+    const response = await axios.get('/users/my-bookings')
+    return response
+  },
+
+  cancelBooking: async (data) => {
+    const response = await axios.post('/users/cancel-booking', data)
+    return response
   }
 }

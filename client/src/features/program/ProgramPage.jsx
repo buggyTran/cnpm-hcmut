@@ -19,7 +19,6 @@ export default function ProgramPage() {
       const res = await adminService.getActiveSemester();
       if (res.data && res.success) {
         setActiveSemester(res.data);
-        console.log("Active semester:", res.data);
       }
     } catch (error) {
       console.error("Failed to fetch active semester:", error);
@@ -74,8 +73,8 @@ export default function ProgramPage() {
               className={styles.input}
               readOnly
               value={
-                user.dateOfBirth
-                  ? new Date(user.dateOfBirth).toLocaleDateString("vi-VN")
+                user?.dateOfBirth
+                  ? new Date(user?.dateOfBirth).toLocaleDateString("vi-VN")
                   : ""
               }
             />

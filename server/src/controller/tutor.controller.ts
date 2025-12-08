@@ -3,6 +3,7 @@ import { Slot, SlotStatus } from '@/models/slot.model'
 import { Subject } from '@/models/subject.model'
 import { Semester, SemesterStatus } from '@/models/semester.model'
 import { UserRole } from '@/models'
+import { Booking, BookingStatus } from '@/models/booking.model'
 
 // Hàm helper để lấy thứ trong tuần từ ngày
 const getDayOfWeek = (date: Date): string => {
@@ -478,3 +479,95 @@ export const getMySubjects = async (req: Request, res: Response) => {
     })
   }
 }
+
+export const getTutorBookings = async (req: Request, res: Response) => {
+  try {
+    const tutorId = (req as any).user?.userId
+
+    if (!(req as any).user?.roles?.includes(UserRole.TUTOR)) {
+      return res.status(403).json({
+        success: false,
+        message: 'Chỉ tutor mới có thể xem lịch dạy'
+      })
+    }
+
+    const bookings = await Booking.find({ tutorId })
+      .populate('studentId', 'displayName email avatarUrl student')
+      .populate('subjectId', 'name code')
+      .populate('slotId')
+      .sort({ createdAt: -1 })
+
+    return res.status(200).json({
+      success: true,
+      data: bookings
+    })
+  } catch (error) {
+    console.error('Error getting tutor bookings:', error)
+    return res.status(500).json({
+      success: false,
+      message: 'Lỗi server khi lấy lịch dạy'
+    })
+  }
+}
+
+export const cancelBookingByTutor = async (req: Request, res: Response) => {
+  try {
+    const tutorId = (req as any).user?.userId
+    const { bookingId, reason } = req.body
+
+    if (!(req as any).user?.roles?.includes(UserRole.TUTOR)) {
+      return res.status(403).json({
+        success: false,
+        message: 'Chỉ tutor mới có thể hủy lịch dạy'
+      })
+    }
+
+    if (!bookingId) {
+      return res.status(400).json({ success: false, message: 'Missing bookingId' })
+    }
+
+    // 1. Find booking
+    const booking = await Booking.findOne({ _id: bookingId, tutorId })
+    if (!booking) {
+      return res.status(404).json({ success: false, message: 'Booking not found' })
+    }
+
+    if (booking.status === BookingStatus.CANCELLED) {
+      return res.status(400).json({ success: false, message: 'Booking is already cancelled' })
+    }
+
+    // 2. Update booking
+    booking.status = BookingStatus.CANCELLED
+    booking.cancellationReason = reason
+    booking.cancelledAt = new Date()
+    booking.cancelledBy = tutorId
+    await booking.save()
+
+    // 3. Update slot
+    if (booking.slotId) {
+      const slot = await Slot.findById(booking.slotId)
+      if (slot) {
+        slot.bookedCount = Math.max(0, slot.bookedCount - 1)
+        if (slot.bookedCount < slot.capacity) {
+          slot.status = SlotStatus.AVAILABLE
+        }
+        await slot.save()
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Booking cancelled successfully',
+      data: booking
+    })
+
+  } catch (error) {
+    console.error('CancelBookingByTutor error:', error)
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
+  }
+}
+

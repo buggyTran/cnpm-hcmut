@@ -1,9 +1,30 @@
-import { useState } from 'react';
-import { Edit2, Mail, Phone, MapPin, BookOpen, Target, Calendar } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Edit2, Mail, Phone, MapPin, BookOpen, Target, Calendar, Clock, User } from 'lucide-react';
 import EditProfileModal from './EditProfileModal';
+import { userService } from '../../../service/user.service';
 
 const StudentProfile = ({ profile }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [bookings, setBookings] = useState([]);
+  const [loadingBookings, setLoadingBookings] = useState(false);
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        setLoadingBookings(true);
+        const response = await userService.getMyBookings();
+        if (response.success) {
+          setBookings(response.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch bookings:', error);
+      } finally {
+        setLoadingBookings(false);
+      }
+    };
+
+    fetchBookings();
+  }, []);
 
   // Format ngày sinh
   const formatDate = (dateString) => {
@@ -118,6 +139,65 @@ const StudentProfile = ({ profile }) => {
             <div className="text-body-sm mt-1">Trạng thái</div>
           </div>
         </div>
+      </div>
+
+      {/* My Bookings */}
+      <div className="card mt-6">
+        <h2 className="heading-4 mb-4">Lịch đã đặt</h2>
+        {loadingBookings ? (
+          <div className="text-center py-4">Đang tải lịch...</div>
+        ) : bookings.length === 0 ? (
+          <div className="text-center py-4 text-gray-500">Chưa có lịch đặt nào.</div>
+        ) : (
+          <div className="space-y-4">
+            {bookings.map((booking) => (
+              <div key={booking._id} className="border rounded-lg p-4 hover:shadow-md transition-shadow bg-white">
+                <div className="flex flex-col md:flex-row justify-between gap-4">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-lg text-blue-600 mb-1">
+                      {booking.subjectId?.name} ({booking.subjectId?.code})
+                    </h3>
+                    <div className="flex items-center gap-2 text-gray-600 mb-1">
+                      <User size={16} />
+                      <span>Gia sư: {booking.tutorId?.displayName}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <Clock size={16} />
+                      <span>
+                        {booking.slotId ? (
+                          <>
+                            {new Date(booking.slotId.date).toLocaleDateString('vi-VN')} | {booking.slotId.startTime} - {booking.slotId.endTime}
+                          </>
+                        ) : (
+                          'Thời gian không xác định'
+                        )}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col items-start md:items-end justify-center gap-2">
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${booking.status === 'CONFIRMED' ? 'bg-green-100 text-green-700' :
+                        booking.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' :
+                          booking.status === 'CANCELLED' ? 'bg-red-100 text-red-700' :
+                            'bg-gray-100 text-gray-700'
+                      }`}>
+                      {booking.status === 'CONFIRMED' ? 'Đã xác nhận' :
+                        booking.status === 'PENDING' ? 'Chờ xác nhận' :
+                          booking.status === 'CANCELLED' ? 'Đã hủy' : booking.status}
+                    </span>
+                    {booking.slotId?.location?.type === 'online' ? (
+                      <span className="text-sm text-blue-600 bg-blue-50 px-2 py-1 rounded">Online</span>
+                    ) : (
+                      <span className="text-sm text-gray-600 bg-gray-50 px-2 py-1 rounded">
+                        Offline: {booking.slotId?.location?.room || 'Chưa cập nhật'}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <EditProfileModal
