@@ -85,6 +85,35 @@ export const createSubject = async (req: AuthRequest, res: Response): Promise<vo
   }
 }
 
+export const deleteSubject = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const subjectId = req.params.id
+
+    const subject = await Subject.findById(subjectId)
+    if (!subject) {
+      res.status(404).json({
+        success: false,
+        message: 'Subject not found'
+      })
+      return
+    }
+
+    await Subject.findByIdAndDelete(subjectId)
+
+    res.status(200).json({
+      success: true,
+      message: 'Subject deleted successfully'
+    })
+  } catch (error) {
+    console.error('DeleteSubject error:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
+  }
+}
+
 export const createSemester = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const userId = req.user?.userId

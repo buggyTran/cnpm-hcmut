@@ -3,6 +3,7 @@ import {
     getAllUser,
     updateUserStatus, updateSemesterStatus, getAllSemester, getActiveSemester,
     createSubject,
+    deleteSubject,
     getAllSubject, getSemesterInfor, getSubjectInfor,
     assignTutorToSubject, removeTutorFromSubject, getTutorsBySubject, getTutorSlotsBySubject
 } from '@/controller/admin.controller'
@@ -28,6 +29,7 @@ router.get('/get-tutor-slots', getTutorSlotsBySubject)
 router.post('/create-semester', authorize(UserRole.ADMIN), createSemester)
 router.patch('/update-semester-status/:id', authorize(UserRole.ADMIN), updateSemesterStatus)
 router.post('/create-subject/:id', authorize(UserRole.ADMIN), createSubject)
+router.delete('/delete-subject/:id', authorize(UserRole.ADMIN), deleteSubject)
 router.get('/get-all-user', authorize(UserRole.ADMIN), getAllUser)
 router.patch('/update-user-status/:id', authorize(UserRole.ADMIN), updateUserStatus)
 router.post('/assign-tutor/:id', authorize(UserRole.ADMIN), assignTutorToSubject)

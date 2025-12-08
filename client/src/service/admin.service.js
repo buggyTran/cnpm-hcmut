@@ -42,6 +42,11 @@ export const adminService = {
     return response
   },
 
+  deleteSubject: async (subjectId) => {
+    const response = await axios.delete(`/admin/delete-subject/${subjectId}`)
+    return response
+  },
+
   getSemesterById: async (semesterId) => {
     const response = await axios.get(`/admin/get-semester/${semesterId}`)
     return response
