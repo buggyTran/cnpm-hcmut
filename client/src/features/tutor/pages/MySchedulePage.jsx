@@ -17,7 +17,7 @@ import { tutorService } from "../../../service/tutor.service";
 import { toast } from "react-toastify";
 
 const MySchedulePage = () => {
-  const { user } = useAuthStore();
+  const { user, fetchMe } = useAuthStore();
   const [viewMode, setViewMode] = useState(
     user?.roles?.includes("TUTOR") ? "tutor" : "student"
   );
@@ -27,6 +27,20 @@ const MySchedulePage = () => {
   const [tutorSessions, setTutorSessions] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  // Ensure user is loaded
+  useEffect(() => {
+    if (!user) {
+      fetchMe();
+    }
+  }, []);
+
+  // Update viewMode when user is loaded
+  useEffect(() => {
+    if (user) {
+      setViewMode(user?.roles?.includes("TUTOR") ? "tutor" : "student");
+    }
+  }, [user]);
+
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -34,10 +48,12 @@ const MySchedulePage = () => {
         const res = await userService.getMyBookings();
         if (res.success) {
           const mapped = res.data.map(b => {
+            console.log(b);
             const date = b.slotId ? new Date(b.slotId.date) : new Date(b.bookedAt);
             const isPast = date < new Date();
             let subStatus = 'upcoming';
             if (b.status === 'CANCELLED') subStatus = 'cancelled';
+            else if (b.status === 'COMPLETED') subStatus = 'completed';
             else if (b.status === 'PENDING') subStatus = 'pending';
             else if (isPast) subStatus = 'completed';
 
@@ -54,8 +70,8 @@ const MySchedulePage = () => {
               location: b.slotId?.location?.room || 'Online',
               status: b.status === 'CONFIRMED' ? 'approved' : b.status.toLowerCase(),
               subStatus: subStatus,
-              statusText: b.status === 'CONFIRMED' ? 'Đã xác nhận' : b.status === 'PENDING' ? 'Chờ xác nhận' : 'Đã hủy',
-              meetingLink: b.slotId?.link
+              statusText: b.status === 'CONFIRMED' ? 'Đã xác nhận' : b.status === 'COMPLETED' ? 'Đã hoàn thành' : b.status === 'PENDING' ? 'Chờ xác nhận' : 'Đã hủy',
+              meetingLink: b.slotId?.location?.room
             };
           });
           setStudentSessions(mapped);
@@ -64,11 +80,12 @@ const MySchedulePage = () => {
         const res = await tutorService.getTutorBookings();
         if (res.success) {
           const mapped = res.data.map(b => {
-            console.log("day la b", b.studentId.student)
+
             const date = b.slotId ? new Date(b.slotId.date) : new Date(b.bookedAt);
             const isPast = date < new Date();
             let subStatus = 'upcoming';
             if (b.status === 'CANCELLED') subStatus = 'cancelled';
+            else if (b.status === 'COMPLETED') subStatus = 'completed';
             else if (b.status === 'PENDING') subStatus = 'pending';
             else if (isPast) subStatus = 'completed';
 
@@ -86,7 +103,7 @@ const MySchedulePage = () => {
               location: b.slotId?.location?.room || 'Online',
               status: b.status === 'CONFIRMED' ? 'approved' : b.status.toLowerCase(),
               subStatus: subStatus,
-              statusText: b.status === 'CONFIRMED' ? 'Đã xác nhận' : b.status === 'PENDING' ? 'Chờ xác nhận' : 'Đã hủy',
+              statusText: b.status === 'CONFIRMED' ? 'Đã xác nhận' : b.status === 'COMPLETED' ? 'Đã hoàn thành' : b.status === 'PENDING' ? 'Chờ xác nhận' : 'Đã hủy',
               meetingLink: b.slotId?.link
             };
           });
@@ -101,8 +118,10 @@ const MySchedulePage = () => {
   };
 
   useEffect(() => {
-    fetchData();
-  }, [viewMode]);
+    if (user) {
+      fetchData();
+    }
+  }, [viewMode, user]);
 
   const handleCancel = async (bookingId) => {
     if (!window.confirm("Bạn có chắc chắn muốn hủy lịch này không?")) return;
@@ -121,10 +140,23 @@ const MySchedulePage = () => {
     }
   };
 
+  const handleComplete = async (bookingId) => {
+    if (!window.confirm("Xác nhận hoàn thành buổi học này?")) return;
+
+    try {
+      await tutorService.completeBooking(bookingId);
+      toast.success("Đã hoàn thành buổi học");
+      fetchData();
+    } catch (error) {
+      console.error("Complete failed", error);
+      toast.error(error.response?.data?.message || "Không thể hoàn thành buổi học");
+    }
+  };
+
   const getStats = (sessions) => {
-    const upcoming = sessions.filter(s => s.status === 'approved' && s.subStatus === 'upcoming').length;
-    const completed = sessions.filter(s => s.status === 'approved' && s.subStatus === 'completed').length;
-    const cancelled = sessions.filter(s => s.status === 'cancelled' || s.subStatus === 'cancelled').length;
+    const upcoming = sessions.filter(s => s.subStatus === 'upcoming').length;
+    const completed = sessions.filter(s => s.subStatus === 'completed').length;
+    const cancelled = sessions.filter(s => s.subStatus === 'cancelled').length;
 
     return [
       {
@@ -162,10 +194,7 @@ const MySchedulePage = () => {
 
   // Filter logic
   const filteredSessions = currentSessions.filter((session) => {
-    if (activeSubTab === 'cancelled') {
-      return session.subStatus === 'cancelled';
-    }
-    return session.status === "approved" && session.subStatus === activeSubTab;
+    return session.subStatus === activeSubTab;
   });
 
   return (
@@ -319,10 +348,6 @@ const MySchedulePage = () => {
                       </div>
 
                       <div className="space-y-2 mb-4 mt-3">
-                        <p className="text-gray-700 font-medium">
-                          Chủ đề:{" "}
-                          <span className="font-normal">{session.topic}</span>
-                        </p>
                         <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                           <div className="flex items-center gap-1.5">
                             <Calendar className="w-4 h-4" />
@@ -375,16 +400,22 @@ const MySchedulePage = () => {
                             </a>
                           )}
                         {viewMode === "tutor" &&
+                          session.subStatus === "upcoming" && (
+                            <button
+                              onClick={() => handleComplete(session.id)}
+                              className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+                            >
+                              <CheckCircle className="w-4 h-4" />
+                              Hoàn thành
+                            </button>
+                          )}
+                        {viewMode === "tutor" &&
                           session.subStatus === "completed" && (
                             <button className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium text-sm">
                               <FileText className="w-4 h-4" />
                               Sửa nhận xét
                             </button>
                           )}
-                        <button className="flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm">
-                          <MessageSquare className="w-4 h-4" />
-                          Nhắn tin
-                        </button>
                         {session.subStatus !== "cancelled" &&
                           session.subStatus !== "completed" && (
                             <button

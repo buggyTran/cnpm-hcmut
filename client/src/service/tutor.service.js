@@ -47,6 +47,12 @@ export const tutorService = {
   cancelBooking: async (bookingId, reason) => {
     const response = await axios.post('/tutor/cancel-booking', { bookingId, reason })
     return response
+  },
+
+  // Hoàn thành lịch dạy
+  completeBooking: async (bookingId) => {
+    const response = await axios.post('/tutor/complete-booking', { bookingId })
+    return response
   }
 }
 

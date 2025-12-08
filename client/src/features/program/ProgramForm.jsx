@@ -96,21 +96,16 @@ export default function ProgramForm({ semester }) {
 
       <label className={styles.block}>
         <div className={styles.label}>* Môn học cần hỗ trợ</div>
-        <select
+        <input
+          type="text"
           name="subject"
           value={data.subject}
           onChange={handleChange}
-          className={`${styles.select} ${errors.subject ? styles.inputInvalid : ""
+          className={`${styles.input} ${errors.subject ? styles.inputInvalid : ""
             }`}
+          placeholder="Nhập tên môn học"
           required
-        >
-          <option value="" disabled hidden>
-            Chọn môn học bạn cần hỗ trợ
-          </option>
-          <option>Cấu trúc dữ liệu</option>
-          <option>Thuật toán</option>
-          <option>Hệ điều hành</option>
-        </select>
+        />
         {errors.subject && (
           <div className={styles.fieldError}>{errors.subject}</div>
         )}
@@ -162,7 +157,6 @@ export default function ProgramForm({ semester }) {
             </option>
             <option value="ONLINE">Online</option>
             <option value="OFFLINE">Offline</option>
-            <option value="HYBRID">Hybrid</option>
           </select>
           {errors.preferredMode && (
             <div className={styles.fieldError}>{errors.preferredMode}</div>
@@ -228,7 +222,7 @@ export default function ProgramForm({ semester }) {
           <input
             name="personalGoal"
             className={styles.input}
-            placeholder="VD: Đạt điểm A trong môn Cấu trúc dữ liệu"
+            placeholder="VD: Đạt điểm A môn DSA"
             value={data.personalGoal}
             onChange={handleChange}
           />

@@ -27,8 +27,18 @@ export const adminService = {
     return response
   },
 
+  getActiveSemesterRequests: async () => {
+    const response = await axios.get('/admin/get-active-semester-requests')
+    return response
+  },
+
   updateSemesterStatus: async (semesterId, status) => {
     const response = await axios.patch(`/admin/update-semester-status/${semesterId}`, { status })
+    return response
+  },
+
+  deleteSemester: async (semesterId) => {
+    const response = await axios.delete(`/admin/delete-semester/${semesterId}`)
     return response
   },
 

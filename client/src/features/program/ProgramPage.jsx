@@ -94,13 +94,13 @@ export default function ProgramPage() {
               placeholder="Năm học"
               className={styles.input}
               readOnly
-              value={`Sinh viên Năm: ${user?.student?.year}`}
+              value={`Sinh viên Năm: ${user?.student?.year || ""}`}
             />
             <input
               placeholder="GPA"
               className={styles.input}
               readOnly
-              value={`GPA: ${user?.student?.gpa}/10`}
+              value={`GPA: ${user?.student?.gpa || ""}`}
             />
           </div>
         </div>

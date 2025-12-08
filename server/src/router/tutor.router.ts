@@ -7,7 +7,8 @@ import {
   toggleSlotStatus,
   getMySubjects,
   getTutorBookings,
-  cancelBookingByTutor
+  cancelBookingByTutor,
+  completeBookingByTutor
 } from '@/controller/tutor.controller'
 import { authorize } from '@/middlewares/auth.middleware'
 import { UserRole } from '@/models'
@@ -24,6 +25,9 @@ router.get('/my-bookings', getTutorBookings)
 
 // POST /api/tutor/cancel-booking - Hủy lịch dạy
 router.post('/cancel-booking', cancelBookingByTutor)
+
+// POST /api/tutor/complete-booking - Hoàn thành lịch dạy
+router.post('/complete-booking', completeBookingByTutor)
 
 // POST /api/tutor/slots - Tạo lịch rảnh mới
 router.post('/slots', createSlot)

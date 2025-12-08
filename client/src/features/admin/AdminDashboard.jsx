@@ -110,6 +110,20 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleDeleteSemester = async (id) => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa kỳ học này không? Tất cả môn học liên quan sẽ bị xóa.")) return;
+    try {
+      const response = await adminService.deleteSemester(id);
+      if (response.success) {
+        toast.success("Xóa kỳ học thành công!");
+        fetchSemesters();
+      }
+    } catch (error) {
+      console.error("Failed to delete semester", error);
+      toast.error(error.response?.data?.message || "Không thể xóa kỳ học");
+    }
+  };
+
   const headerMap = {
     semesters: {
       title: "Quản Lý Kỳ Đăng Ký",
@@ -170,6 +184,7 @@ export default function AdminDashboard() {
           handleInputChange={handleInputChange}
           handleSubmit={handleSubmit}
           toggleSemesterStatus={toggleSemesterStatus}
+          handleDeleteSemester={handleDeleteSemester}
         />
       )}
 

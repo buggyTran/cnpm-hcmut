@@ -6,6 +6,7 @@ import { MentoringRequest, PreferredMode, SessionType } from '@/models/mentoring
 import { Semester } from '@/models/semester.model'
 import { Slot, SlotStatus } from '@/models/slot.model'
 import { Booking, BookingStatus } from '@/models/booking.model'
+import bcrypt from 'bcrypt'
 
 /**
  * @route   GET /api/users/me
@@ -56,7 +57,92 @@ export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
       }
     })
   } catch (error) {
-    console.error('GetMe error:', error)
+    console.error('UpdateUserInfor error:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Lỗi server',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
+  }
+}
+
+/**
+ * @route   POST /api/users/change-password
+ * @desc    Change user password
+ * @access  Private
+ */
+export const changePassword = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const userId = req.user?.userId
+    const { currentPassword, newPassword } = req.body
+
+    if (!userId) {
+      res.status(401).json({
+        success: false,
+        message: 'Unauthorized'
+      })
+      return
+    }
+
+    // Find user
+    const user = await User.findById(userId)
+    if (!user) {
+      res.status(404).json({
+        success: false,
+        message: 'Không tìm thấy người dùng'
+      })
+      return
+    }
+
+    // Check if email is @hcmut.edu.vn domain
+    if (user.email.endsWith('@hcmut.edu.vn')) {
+      res.status(403).json({
+        success: false,
+        message: 'Tài khoản HCMUT không được phép đổi mật khẩu'
+      })
+      return
+    }
+
+    // Validate input
+    if (!currentPassword || !newPassword) {
+      res.status(400).json({
+        success: false,
+        message: 'Vui lòng cung cấp mật khẩu hiện tại và mật khẩu mới'
+      })
+      return
+    }
+
+    if (newPassword.length < 6) {
+      res.status(400).json({
+        success: false,
+        message: 'Mật khẩu mới phải có ít nhất 6 ký tự'
+      })
+      return
+    }
+
+    // Verify current password
+    const isPasswordValid = await bcrypt.compare(currentPassword, user.passwordHash)
+    if (!isPasswordValid) {
+      res.status(400).json({
+        success: false,
+        message: 'Mật khẩu hiện tại không đúng'
+      })
+      return
+    }
+
+    // Hash new password
+    const newPasswordHash = await bcrypt.hash(newPassword, 10)
+
+    // Update password
+    user.passwordHash = newPasswordHash
+    await user.save()
+
+    res.status(200).json({
+      success: true,
+      message: 'Đổi mật khẩu thành công'
+    })
+  } catch (error) {
+    console.error('ChangePassword error:', error)
     res.status(500).json({
       success: false,
       message: 'Lỗi server',

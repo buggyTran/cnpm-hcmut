@@ -1,6 +1,6 @@
 import { Response } from 'express'
 import { AuthRequest } from '@/middlewares/auth.middleware'
-import { Semester, User, Subject, SemesterStatus, UserRole, Slot } from '@/models'
+import { Semester, User, Subject, SemesterStatus, UserRole, Slot, MentoringRequest } from '@/models'
 
 export const getAllSubject = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
@@ -106,6 +106,76 @@ export const deleteSubject = async (req: AuthRequest, res: Response): Promise<vo
     })
   } catch (error) {
     console.error('DeleteSubject error:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
+  }
+}
+
+export const deleteSemester = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const semesterId = req.params.id
+
+    const semester = await Semester.findById(semesterId)
+    if (!semester) {
+      res.status(404).json({
+        success: false,
+        message: 'Semester not found'
+      })
+      return
+    }
+
+    // Delete all subjects associated with this semester
+    await Subject.deleteMany({ semesterId })
+
+    // Delete the semester
+    await Semester.findByIdAndDelete(semesterId)
+
+    res.status(200).json({
+      success: true,
+      message: 'Semester deleted successfully'
+    })
+  } catch (error) {
+    console.error('DeleteSemester error:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
+  }
+}
+
+export const getActiveSemesterRequests = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    // Find active semester
+    const activeSemester = await Semester.findOne({ status: SemesterStatus.ACTIVE })
+    if (!activeSemester) {
+      res.status(404).json({
+        success: false,
+        message: 'No active semester found'
+      })
+      return
+    }
+
+    // Get all mentoring requests for active semester
+    const requests = await MentoringRequest.find({ semesterId: activeSemester._id })
+      .populate('studentId', 'email displayName student')
+      .populate('semesterId', 'code name')
+      .sort({ createdAt: -1 })
+
+    res.status(200).json({
+      success: true,
+      message: 'Mentoring requests retrieved successfully',
+      data: {
+        semester: activeSemester,
+        requests: requests,
+        total: requests.length
+      }
+    })
+  } catch (error) {
+    console.error('GetActiveSemesterRequests error:', error)
     res.status(500).json({
       success: false,
       message: 'Internal server error',

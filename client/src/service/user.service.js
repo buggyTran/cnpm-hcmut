@@ -29,5 +29,10 @@ export const userService = {
   cancelBooking: async (data) => {
     const response = await axios.post('/users/cancel-booking', data)
     return response
+  },
+
+  changePassword: async (data) => {
+    const response = await axios.post('/users/change-password', data)
+    return response
   }
 }
